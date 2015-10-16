@@ -5,8 +5,11 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.PushNotifications;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -14,6 +17,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.WindowsAzure.Messaging;
 
 namespace PushClient
 {
@@ -22,6 +26,10 @@ namespace PushClient
     /// </summary>
     sealed partial class App : Application
     {
+
+        private const string notificationHubPath = "[path]";
+        private const string notificationHubConnectionString = "[connection string]";
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -46,6 +54,9 @@ namespace PushClient
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+
+            RegisterBackgroundTask();
+            InitNotificationsAsync();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
@@ -76,6 +87,36 @@ namespace PushClient
             }
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private async void RegisterBackgroundTask()
+        {
+            if (!BackgroundTaskRegistration.AllTasks.Any(i => i.Value.Name == "PushBackgroundTask"))
+            {
+                var result = await BackgroundExecutionManager.RequestAccessAsync();
+                var builder = new BackgroundTaskBuilder();
+
+                builder.Name = "PushBackgroundTask";
+                builder.TaskEntryPoint = typeof(PushClient.Background.PushBackgroundTask).FullName;
+                builder.SetTrigger(new PushNotificationTrigger());
+                BackgroundTaskRegistration task = builder.Register();
+            }
+        }
+
+        /// <summary>
+        /// Inicializace push notifikací přímo k Notification Hubu.
+        /// </summary>
+        private async void InitNotificationsAsync()
+        {
+            var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+            var hub = new NotificationHub(notificationHubPath, notificationHubConnectionString);
+            var result = await hub.RegisterNativeAsync(channel.Uri, new List<string>() { "Tag1" });
+
+            if (result.RegistrationId != null)
+            {
+                var dialog = new MessageDialog("Registration for push successful.");
+                await dialog.ShowAsync();
+            }
         }
 
         /// <summary>

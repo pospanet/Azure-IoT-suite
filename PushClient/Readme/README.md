@@ -42,7 +42,7 @@ To make the PushClient app work, there are a few things to set up.
 1. Go to the Azure Management Portal -> Service Bus and open the namespace which contains your Notification Hub.
 1. Click **CONNECTION INFORMATION** at the bottom.
 
-  ![](connection-information.png)
+  ![](connection-info.png)
 
 1. Copy the **DefaultListenShareAccessSignature** connection string.
 

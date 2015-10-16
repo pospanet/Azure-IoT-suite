@@ -58,9 +58,9 @@ To make the PushClient app work, there are a few things to set up.
 1. In **Visual Studio** open PushClient -> **App.xaml.cs**.
 1. Replace `[path]` with Notification Hub name and `[connection string]` with namespace connection string (DefaultListenShareAccessSignature).
 
-```csharp
-private const string notificationHubPath = "[path]";
-private const string notificationHubConnectionString = "[connection string]";
-```
+  ```csharp
+  private const string notificationHubPath = "[path]";
+  private const string notificationHubConnectionString = "[connection string]";
+  ```
 
 1. Run the app.

@@ -26,10 +26,10 @@ namespace SensorApp
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            ServiceBusConnectionStringBuilder builder = new ServiceBusConnectionStringBuilder(ConnectionString)
-            {
-                TransportType = TransportType.Amqp
-            };
+            //ServiceBusConnectionStringBuilder builder = new ServiceBusConnectionStringBuilder(ConnectionString)
+            //{
+            //    TransportType = TransportType.Amqp
+            //};
 
             MessagingFactory factory = MessagingFactory.CreateFromConnectionString(ConnectionString);
 
